@@ -6,6 +6,7 @@ const initData = {
     minTemp: 21,
     maxTemp: 30,
     icon: 1,
+    location: 'HCM',
     status: 'Cloudy',
   },
   forecastData: null,
@@ -15,7 +16,11 @@ const initData = {
 export default (state = initData, { type, payload }) => {
   switch (type) {
     case types.weather.repeatData:
-      return { ...state, currentData: payload.currentData, forecastData: payload.forecastData };
+      return {
+        ...state,
+        currentData: payload.currentData,
+        forecastData: payload.forecastData,
+      };
     case types.weather.repeatFetching:
       return { ...state, isFetching: payload };
     default:
