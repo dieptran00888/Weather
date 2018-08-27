@@ -6,10 +6,47 @@ const initData = {
     minTemp: 21,
     maxTemp: 30,
     icon: 1,
-    location: 'HCM',
+    area: 'Ho Chi Minh',
     status: 'Cloudy',
   },
-  forecastData: null,
+  forecastData: [
+    1: {
+      name: 'Thứ ba',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 1,
+    },
+    2: {
+      name: 'Thứ tư',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 2,
+    },
+    3: {
+      name: 'Thứ năm',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 3,
+    },
+    4: {
+      name: 'Thứ sáu',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 4,
+    },
+    5: {
+      name: 'Thứ bảy',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 5,
+    },
+    6: {
+      name: 'Chủ nhật',
+      minTemp: 21,
+      maxTemp: 30,
+      icon: 6,
+    },
+  ],
   isFetching: false,
 };
 
