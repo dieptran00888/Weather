@@ -7,6 +7,5 @@ export default function* () {
   // call api
   // let data = api.get...
   // yield put(repeatData(data));
-  console.log('doFetchData ');
   yield put(repeatFetching(false));
 }

@@ -1,25 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Text, View, Image, TouchableOpacity, FlatList, StyleSheet,
+  Text, View, Image, TouchableOpacity, StyleSheet, FlatList,
 } from 'react-native';
 
 import weatherSelector from '~/domain/selectors/weather';
 
 import { doFetchData } from '~/domain/actions/weather';
 import icons from '~/assets/images/weather';
+import Weekly from '~/screens/Home/weekly';
 @connect(
   state => ({
     currentData: weatherSelector.getCurrentData(state),
+    forecastData: weatherSelector.getForecastData(state),
   }),
   { doFetchData },
 )
+
 export default class Home extends Component {
   componentDidMount() {
     this.props.doFetchData();
   }
 
   render() {
+    const forecastDataView = this.props.forecastData.map((item, index) => {
+      return <Weekly item = {item} key={index} ></Weekly>;
+    });
+
     return (
       <View style={styles.container} >
         {/* TODO: Header view - Current */}
@@ -45,7 +52,6 @@ export default class Home extends Component {
             <View style={styles.item}>
               <Text style={styles.arrow}>&uarr;</Text>
               <Text>{this.props.currentData.maxTemp}&deg;</Text>
-              <Image />
             </View>
             <View style={styles.item}>
               <Image
@@ -58,22 +64,7 @@ export default class Home extends Component {
         </View>
         {/* TODO: Mang thoi tiet */}
         <View style={styles.weeklyTemp}>
-          <View style={styles.weeklyContainer}>
-            <View style={styles.day}>
-              <Image source={icons[2]} style={{ width: 24, height: 24 }} />
-              <Text style={{ paddingLeft: 10 }}>Thu ba</Text>
-            </View>
-            <View style={styles.weeklyMaxMinTemp}>
-              <View style={styles.weeklyMaxMinTemp}>
-                <Text style={styles.arrow}>&darr;</Text>
-                <Text>21&deg;</Text>
-              </View>
-              <View style={styles.weeklyMaxMinTemp}>
-                <Text style={styles.arrow}>&uarr;</Text>
-                <Text>30&deg;</Text>
-              </View>
-            </View>
-          </View>
+          {forecastDataView}
         </View>
       </View>
     );
@@ -143,13 +134,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 
-  // Weekly temperature container
   weeklyTemp: {
     flex: 2,
-    flexDirection: 'row',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingTop: 30,
+    marginHorizontal: 20,
+    marginTop: 30,
   },
 
   day: {
