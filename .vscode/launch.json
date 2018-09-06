@@ -21,7 +21,10 @@
       "platform": "ios",
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/.vscode/.react",
-      "runArguments": ["--simulator", "iPhone X"]
+      "runArguments": [
+        "--simulator",
+        "iPhone 6"
+      ]
     },
     {
       "name": "Attach to packager",

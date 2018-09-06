@@ -1,53 +1,19 @@
 import types from '~/domain/types';
 
 const initData = {
+  cityId: '353412',
+  cityName: 'Hà Nội',
+  unit: 'C',
   currentData: {
-    temp: 20,
-    minTemp: 21,
-    maxTemp: 30,
-    icon: 1,
-    area: 'Ho Chi Minh',
-    status: 'Cloudy',
+    temp: null,
+    minTemp: null,
+    maxTemp: null,
+    icon: null,
+    text: null,
   },
-  forecastData: [
-    {
-      name: 'Thứ ba',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 1,
-    },
-    {
-      name: 'Thứ tư',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 2,
-    },
-    {
-      name: 'Thứ năm',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 3,
-    },
-    {
-      name: 'Thứ sáu',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 4,
-    },
-    {
-      name: 'Thứ bảy',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 5,
-    },
-    {
-      name: 'Chủ nhật',
-      minTemp: 21,
-      maxTemp: 30,
-      icon: 6,
-    },
-  ],
+  forecastData: [],
   isFetching: false,
+  lastUpdate: null,
 };
 
 export default (state = initData, { type, payload }) => {
@@ -57,6 +23,12 @@ export default (state = initData, { type, payload }) => {
         ...state,
         currentData: payload.currentData,
         forecastData: payload.forecastData,
+        lastUpdate: payload.lastUpdate,
+      };
+    case types.weather.switchUnit:
+      return {
+        ...state,
+        unit: payload,
       };
     case types.weather.repeatFetching:
       return { ...state, isFetching: payload };

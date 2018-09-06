@@ -7,6 +7,7 @@ import weather from '~/domain/reducers/weather';
 const rootPersistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['weather'],
 };
 
 const rootReducer = combineReducers({
