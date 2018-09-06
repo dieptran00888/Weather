@@ -2,7 +2,7 @@ import { call, put, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import moment from 'moment';
 import { create } from 'apisauce';
-import { repeatData, repeatFetching } from '~/domain/actions/weather';
+import { repeatData } from '~/domain/actions/weather';
 import weatherSelector from '~/domain/selectors/weather';
 
 const APIKEY = 'dgDtGR2Q74nEccZzXPrJ52GWbPAl8zm6';
@@ -43,6 +43,7 @@ function* getCurrentData(cityId) {
   } catch (err) {
     console.log(err);
   }
+  return null;
 }
 
 function dailyObjectToItem(it) {
@@ -58,6 +59,17 @@ function dailyObjectToItem(it) {
     day: it.Date,
     iconDay: it.Day.Icon,
     iconNight: it.Night.Icon,
+  };
+}
+
+function hourlyObjectToItem(it) {
+  return {
+    hour: it.DateTime,
+    temp: {
+      c: Math.round(it.Temperature.Value),
+      f: Math.round(it.Temperature.Value * 1.8 + 32),
+    },
+    icon: it.WeatherIcon,
   };
 }
 
@@ -79,6 +91,23 @@ function* getDailyForecastsData(cityId) {
   return null;
 }
 
+function* getHourlyForecastsData(cityId) {
+  try {
+    const hourlyForecastsData = yield call(
+      api.get,
+      `forecasts/v1/hourly/12hour/${cityId}?apikey=${APIKEY}&language=vi-vn&details=true&metric=true`,
+    );
+    if (hourlyForecastsData && hourlyForecastsData.status === 200) {
+      const responseData = hourlyForecastsData.data;
+      const dataList = responseData.map(it => hourlyObjectToItem(it));
+      return dataList;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+}
+
 export default function* (action) {
   const { isForceUpdate } = action.payload || { isForceUpdate: false };
   const lastUpdate = (yield select(weatherSelector.getLastUpdate)) || 0;
@@ -87,13 +116,15 @@ export default function* (action) {
   if (!hasUpdateData && !isForceUpdate) return;
   try {
     const currentData = yield call(getCurrentData, cityId);
-    yield delay(1000);
+    yield delay(100);
     const forecastData = yield call(getDailyForecastsData, cityId);
-    if (!currentData || !forecastData) {
+    const hourlyData = yield call(getHourlyForecastsData, cityId);
+    if (!currentData || !forecastData || !hourlyData) {
       yield put(
         repeatData({
           currentData,
           forecastData,
+          hourlyData,
         }),
       );
     } else {
@@ -101,6 +132,7 @@ export default function* (action) {
         repeatData({
           currentData,
           forecastData,
+          hourlyData,
           lastUpdate: moment().unix(),
         }),
       );

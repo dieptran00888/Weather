@@ -1638,7 +1638,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   _reactNative.AppRegistry.registerComponent(_app.name, function () {
     return _index.default;
   });
-},0,[1,507,701],"index.js");
+},0,[1,507,702],"index.js");
 __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   'use strict';
 
@@ -84171,6 +84171,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
       text: null
     },
     forecastData: [],
+    hourlyForecastsData: [],
     isFetching: false,
     lastUpdate: null
   };
@@ -84187,6 +84188,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
         return _objectSpread({}, state, {
           currentData: payload.currentData,
           forecastData: payload.forecastData,
+          hourlyForecastsData: payload.hourlyData,
           lastUpdate: payload.lastUpdate
         });
 
@@ -84328,7 +84330,8 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
 
   var _marked = regeneratorRuntime.mark(getCurrentData),
       _marked2 = regeneratorRuntime.mark(getDailyForecastsData),
-      _marked3 = regeneratorRuntime.mark(_callee);
+      _marked3 = regeneratorRuntime.mark(getHourlyForecastsData),
+      _marked4 = regeneratorRuntime.mark(_callee);
 
   var APIKEY = 'dgDtGR2Q74nEccZzXPrJ52GWbPAl8zm6';
   var api = (0, _apisauce.create)({
@@ -84389,6 +84392,9 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
             console.log(_context.t0);
 
           case 14:
+            return _context.abrupt("return", null);
+
+          case 15:
           case "end":
             return _context.stop();
         }
@@ -84409,6 +84415,17 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
       day: it.Date,
       iconDay: it.Day.Icon,
       iconNight: it.Night.Icon
+    };
+  }
+
+  function hourlyObjectToItem(it) {
+    return {
+      hour: it.DateTime,
+      temp: {
+        c: Math.round(it.Temperature.Value),
+        f: Math.round(it.Temperature.Value * 1.8 + 32)
+      },
+      icon: it.WeatherIcon
     };
   }
 
@@ -84458,100 +84475,151 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
     }, _marked2, this, [[0, 10]]);
   }
 
-  function _callee(action) {
-    var _ref, isForceUpdate, lastUpdate, cityId, hasUpdateData, currentData, forecastData;
-
-    return regeneratorRuntime.wrap(function _callee$(_context3) {
+  function getHourlyForecastsData(cityId) {
+    var hourlyForecastsData, responseData, dataList;
+    return regeneratorRuntime.wrap(function getHourlyForecastsData$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _ref = action.payload || {
-              isForceUpdate: false
-            }, isForceUpdate = _ref.isForceUpdate;
+            _context3.prev = 0;
             _context3.next = 3;
-            return (0, _effects.select)(_weather2.default.getLastUpdate);
+            return (0, _effects.call)(api.get, "forecasts/v1/hourly/12hour/" + cityId + "?apikey=" + APIKEY + "&language=vi-vn&details=true&metric=true");
 
           case 3:
-            _context3.t0 = _context3.sent;
+            hourlyForecastsData = _context3.sent;
 
-            if (_context3.t0) {
-              _context3.next = 6;
+            if (!(hourlyForecastsData && hourlyForecastsData.status === 200)) {
+              _context3.next = 8;
               break;
             }
 
-            _context3.t0 = 0;
+            responseData = hourlyForecastsData.data;
+            dataList = responseData.map(function (it) {
+              return hourlyObjectToItem(it);
+            });
+            return _context3.abrupt("return", dataList);
 
-          case 6:
-            lastUpdate = _context3.t0;
-            _context3.next = 9;
-            return (0, _effects.select)(_weather2.default.getCityId);
+          case 8:
+            _context3.next = 13;
+            break;
 
-          case 9:
-            cityId = _context3.sent;
-            hasUpdateData = (0, _moment.default)().unix() - lastUpdate > 1000 * 60 * 15;
-
-            if (!(!hasUpdateData && !isForceUpdate)) {
-              _context3.next = 13;
-              break;
-            }
-
-            return _context3.abrupt("return");
+          case 10:
+            _context3.prev = 10;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0);
 
           case 13:
-            _context3.prev = 13;
-            _context3.next = 16;
-            return (0, _effects.call)(getCurrentData, cityId);
+            return _context3.abrupt("return", null);
 
-          case 16:
-            currentData = _context3.sent;
-            _context3.next = 19;
-            return (0, _reduxSaga.delay)(1000);
-
-          case 19:
-            _context3.next = 21;
-            return (0, _effects.call)(getDailyForecastsData, cityId);
-
-          case 21:
-            forecastData = _context3.sent;
-
-            if (!(!currentData || !forecastData)) {
-              _context3.next = 27;
-              break;
-            }
-
-            _context3.next = 25;
-            return (0, _effects.put)((0, _weather.repeatData)({
-              currentData: currentData,
-              forecastData: forecastData
-            }));
-
-          case 25:
-            _context3.next = 29;
-            break;
-
-          case 27:
-            _context3.next = 29;
-            return (0, _effects.put)((0, _weather.repeatData)({
-              currentData: currentData,
-              forecastData: forecastData,
-              lastUpdate: (0, _moment.default)().unix()
-            }));
-
-          case 29:
-            _context3.next = 34;
-            break;
-
-          case 31:
-            _context3.prev = 31;
-            _context3.t1 = _context3["catch"](13);
-            console.error(_context3.t1);
-
-          case 34:
+          case 14:
           case "end":
             return _context3.stop();
         }
       }
-    }, _marked3, this, [[13, 31]]);
+    }, _marked3, this, [[0, 10]]);
+  }
+
+  function _callee(action) {
+    var _ref, isForceUpdate, lastUpdate, cityId, hasUpdateData, currentData, forecastData, hourlyData;
+
+    return regeneratorRuntime.wrap(function _callee$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _ref = action.payload || {
+              isForceUpdate: false
+            }, isForceUpdate = _ref.isForceUpdate;
+            _context4.next = 3;
+            return (0, _effects.select)(_weather2.default.getLastUpdate);
+
+          case 3:
+            _context4.t0 = _context4.sent;
+
+            if (_context4.t0) {
+              _context4.next = 6;
+              break;
+            }
+
+            _context4.t0 = 0;
+
+          case 6:
+            lastUpdate = _context4.t0;
+            _context4.next = 9;
+            return (0, _effects.select)(_weather2.default.getCityId);
+
+          case 9:
+            cityId = _context4.sent;
+            hasUpdateData = (0, _moment.default)().unix() - lastUpdate > 1000 * 60 * 15;
+
+            if (!(!hasUpdateData && !isForceUpdate)) {
+              _context4.next = 13;
+              break;
+            }
+
+            return _context4.abrupt("return");
+
+          case 13:
+            _context4.prev = 13;
+            _context4.next = 16;
+            return (0, _effects.call)(getCurrentData, cityId);
+
+          case 16:
+            currentData = _context4.sent;
+            _context4.next = 19;
+            return (0, _reduxSaga.delay)(100);
+
+          case 19:
+            _context4.next = 21;
+            return (0, _effects.call)(getDailyForecastsData, cityId);
+
+          case 21:
+            forecastData = _context4.sent;
+            _context4.next = 24;
+            return (0, _effects.call)(getHourlyForecastsData, cityId);
+
+          case 24:
+            hourlyData = _context4.sent;
+
+            if (!(!currentData || !forecastData || !hourlyData)) {
+              _context4.next = 30;
+              break;
+            }
+
+            _context4.next = 28;
+            return (0, _effects.put)((0, _weather.repeatData)({
+              currentData: currentData,
+              forecastData: forecastData,
+              hourlyData: hourlyData
+            }));
+
+          case 28:
+            _context4.next = 32;
+            break;
+
+          case 30:
+            _context4.next = 32;
+            return (0, _effects.put)((0, _weather.repeatData)({
+              currentData: currentData,
+              forecastData: forecastData,
+              hourlyData: hourlyData,
+              lastUpdate: (0, _moment.default)().unix()
+            }));
+
+          case 32:
+            _context4.next = 37;
+            break;
+
+          case 34:
+            _context4.prev = 34;
+            _context4.t1 = _context4["catch"](13);
+            console.error(_context4.t1);
+
+          case 37:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _marked4, this, [[13, 34]]);
   }
 },566,[546,532,567,568,654,655],"app/domain/sagas/weather/doFetchData/index.js");
 __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
@@ -91362,7 +91430,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = exports.isFetching = exports.getForecastData = exports.getLastUpdate = exports.getCityId = exports.getUnit = exports.getWeather = exports.getCurrentData = void 0;
+  exports.default = exports.getHourlyForecastsData = exports.isFetching = exports.getForecastData = exports.getLastUpdate = exports.getCityId = exports.getUnit = exports.getWeather = exports.getCurrentData = void 0;
 
   var getCurrentData = function getCurrentData(state) {
     return state.weather.currentData || null;
@@ -91405,6 +91473,12 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   };
 
   exports.isFetching = isFetching;
+
+  var getHourlyForecastsData = function getHourlyForecastsData(state) {
+    return state.weather.hourlyForecastsData || [];
+  };
+
+  exports.getHourlyForecastsData = getHourlyForecastsData;
   var _default = {
     getWeather: getWeather,
     getCurrentData: getCurrentData,
@@ -91439,6 +91513,8 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   var _weather3 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[7], "../../assets/images/weather"));
 
   var _weekly = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[8], "./weekly"));
+
+  var _hourly = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[9], "./hourly"));
 
   var _dec,
       _class,
@@ -91519,6 +91595,16 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
           __source: {
             fileName: _jsxFileName,
             lineNumber: 92
+          }
+        });
+      }, _this.renderHourlyForecastItem = function (item) {
+        var unit = _this.props.weather.unit;
+        return _react.default.createElement(_hourly.default, {
+          item: item,
+          unit: unit,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 113
           }
         });
       }, _temp));
@@ -91715,39 +91801,69 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
         });
       }
     }, {
+      key: "renderHourlyForecast",
+      value: function renderHourlyForecast() {
+        var _this4 = this;
+
+        var _this$props$weather3 = this.props.weather,
+            hourlyForecastsData = _this$props$weather3.hourlyForecastsData,
+            unit = _this$props$weather3.unit;
+        return _react.default.createElement(_reactNative.FlatList, {
+          unit: unit,
+          data: hourlyForecastsData,
+          renderItem: function renderItem(_ref2) {
+            var item = _ref2.item;
+            return _this4.renderHourlyForecastItem(item);
+          },
+          keyExtractor: function keyExtractor(item) {
+            return item.hour;
+          },
+          style: {
+            marginTop: 20,
+            marginHorizontal: 15,
+            backgroundColor: 'gray'
+          },
+          horizontal: true,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 120
+          }
+        });
+      }
+    }, {
       key: "render",
       value: function render() {
-        var _this4 = this;
+        var _this5 = this;
 
         return _react.default.createElement(_reactNative.ScrollView, {
           refreshControl: _react.default.createElement(_reactNative.RefreshControl, {
             refreshing: false,
             onRefresh: function onRefresh() {
-              return _this4.onRefresh();
+              return _this5.onRefresh();
             },
             title: "Updating",
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 113
+              lineNumber: 134
             }
           }),
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 112
+            lineNumber: 133
           }
         }, _react.default.createElement(_reactNative.View, {
           style: styles.container,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 119
+            lineNumber: 140
           }
         }, _react.default.createElement(_reactNative.View, {
           style: styles.header,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 121
+            lineNumber: 142
           }
-        }, this.renderTemperatureSwitching(), this.renderCurrentData()), this.renderDailyForecast(this.props.weather.unit)));
+        }, this.renderTemperatureSwitching(), this.renderCurrentData()), this.renderHourlyForecast(), this.renderDailyForecast()));
       }
     }]);
 
@@ -91789,14 +91905,15 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
       fontSize: 20
     },
     location: {
-      marginTop: 24,
+      marginTop: 20,
       fontSize: 18
     },
     todayTemp: {
       color: '#F44336',
       fontSize: 70,
-      fontFamily: 'Helvetica',
-      letterSpacing: -1.45
+      letterSpacing: -1.45,
+      marginVertical: 20,
+      fontFamily: 'Helvetica'
     },
     maxMinTemp: {
       flexDirection: 'row',
@@ -91810,14 +91927,13 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
     },
     weeklyTemp: {
       width: '100%',
-      marginTop: 30,
-      marginHorizontal: 20
+      marginTop: 30
     },
     arrow: {
       color: '#F44336'
     }
   });
-},656,[37,87,508,1,655,654,657,658,699],"app/screens/Home/index.js");
+},656,[37,87,508,1,655,654,657,658,699,701],"app/screens/Home/index.js");
 __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -92443,7 +92559,6 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
             item = _this$props.item,
             unit = _this$props.unit,
             currentLanguage = _this$props.currentLanguage;
-        console.log('unit', unit);
 
         _moment.default.locale(currentLanguage, _$$_REQUIRE(_dependencyMap[6], 'moment/locale/vi'));
 
@@ -92456,13 +92571,13 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
           style: styles.weeklyContainer,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 25
+            lineNumber: 23
           }
         }, _react.default.createElement(_reactNative.View, {
           style: styles.day,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 26
+            lineNumber: 24
           }
         }, _react.default.createElement(_reactNative.Image, {
           source: _weather.default[iconUri],
@@ -92473,7 +92588,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 27
+            lineNumber: 25
           }
         }), _react.default.createElement(_reactNative.Text, {
           style: {
@@ -92482,47 +92597,47 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
           },
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 28
+            lineNumber: 26
           }
         }, dayName)), _react.default.createElement(_reactNative.View, {
           style: styles.weeklyMaxMinTemp,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 30
+            lineNumber: 28
           }
         }, _react.default.createElement(_reactNative.View, {
           style: styles.weeklyMaxMinTemp,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 31
+            lineNumber: 29
           }
         }, _react.default.createElement(_reactNative.Text, {
           style: styles.arrow,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 32
+            lineNumber: 30
           }
         }, "\u2193"), _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 33
+            lineNumber: 31
           }
         }, tempMin, "\xB0")), _react.default.createElement(_reactNative.View, {
           style: styles.weeklyMaxMinTemp,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 35
+            lineNumber: 33
           }
         }, _react.default.createElement(_reactNative.Text, {
           style: styles.arrow,
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 36
+            lineNumber: 34
           }
         }, " \u2191"), _react.default.createElement(_reactNative.Text, {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 37
+            lineNumber: 35
           }
         }, tempMax, " \xB0"))));
       }
@@ -92552,7 +92667,7 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
     },
     weeklyContainer: {
       flexDirection: 'row',
-      marginHorizontal: 20,
+      marginHorizontal: 10,
       marginVertical: 15
     }
   });
@@ -92632,12 +92747,130 @@ __d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
     return vi;
   });
 },700,[567],"node_modules/moment/locale/vi.js");
+__d(function (global, _$$_REQUIRE, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = void 0;
+
+  var _react = _interopRequireWildcard(_$$_REQUIRE(_dependencyMap[0], "react"));
+
+  var _index = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "./../../../node_modules/react-transform-hmr/lib/index.js"));
+
+  var _reactNative = _$$_REQUIRE(_dependencyMap[2], "react-native");
+
+  var _moment = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[3], "moment"));
+
+  var _utils = _$$_REQUIRE(_dependencyMap[4], "../../utils");
+
+  var _index2 = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[5], "../../assets/images/weather/index"));
+
+  var _jsxFileName = "/Users/dieptran/Desktop/workspace/WeatherFramgia/app/screens/Home/hourly.js";
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+  function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+  function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+  function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+  function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+  var _components = {
+    Hourly: {
+      displayName: "Hourly"
+    }
+  };
+
+  var _node_modulesReactTransformHmrLibIndexJs2 = (0, _index.default)({
+    filename: "/Users/dieptran/Desktop/workspace/WeatherFramgia/app/screens/Home/hourly.js",
+    components: _components,
+    locals: [module],
+    imports: [_react.default]
+  });
+
+  function _wrapComponent(id) {
+    return function (Component) {
+      return _node_modulesReactTransformHmrLibIndexJs2(Component, id);
+    };
+  }
+
+  var Hourly = _wrapComponent("Hourly")(function (_Component) {
+    function Hourly() {
+      _classCallCheck(this, Hourly);
+
+      return _possibleConstructorReturn(this, _getPrototypeOf(Hourly).apply(this, arguments));
+    }
+
+    _createClass(Hourly, [{
+      key: "render",
+      value: function render() {
+        var _this$props = this.props,
+            item = _this$props.item,
+            unit = _this$props.unit;
+        var hourString = (0, _moment.default)(item.hour).locale('en').format('LT');
+        var temp = (0, _utils.getTemperatureFromUnit)(item.temp, unit);
+        return _react.default.createElement(_reactNative.View, {
+          style: {
+            flexDirection: 'column',
+            marginHorizontal: 8,
+            justifyContent: 'center',
+            alignItems: 'center'
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 13
+          }
+        }, _react.default.createElement(_reactNative.Text, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 16
+          }
+        }, temp, "\u02DA"), _react.default.createElement(_reactNative.Image, {
+          source: _index2.default['2'],
+          style: {
+            width: 29,
+            height: 29,
+            marginVertical: 5
+          },
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 17
+          }
+        }), _react.default.createElement(_reactNative.Text, {
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 18
+          }
+        }, hourString));
+      }
+    }]);
+
+    _inherits(Hourly, _Component);
+
+    return Hourly;
+  }(_react.Component));
+
+  var _default2 = Hourly;
+  exports.default = _default2;
+},701,[37,87,1,567,657,658],"app/screens/Home/hourly.js");
 __d(function(global, require, module, exports) {
   module.exports = {
   "name": "Weather",
   "displayName": "Weather"
 };
-},701,[],"app.json");
+},702,[],"app.json");
 require(263);
 require(0);
 //# sourceMappingURL=index.map

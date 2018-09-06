@@ -5,6 +5,7 @@ export const getCityId = state => state.weather.cityId || '353412';
 export const getLastUpdate = state => state.weather.lastUpdate || null;
 export const getForecastData = state => state.weather.forecastData || [];
 export const isFetching = state => state.weather.isFetching || false;
+export const getHourlyForecastsData = state => state.weather.hourlyForecastsData || [];
 
 export default {
   getWeather,

@@ -10,11 +10,11 @@ import { doFetchData, switchUnit } from '~/domain/actions/weather';
 import { getTemperatureFromUnit } from '~/utils';
 import icons from '~/assets/images/weather';
 import Weekly from '~/screens/Home/weekly';
+import Hourly from '~/screens/Home/hourly';
 
 @connect(
   state => ({
     weather: weatherSelector.getWeather(state),
-    // forecastData: weatherSelector.getForecastData(state),
   }),
   { doFetchData, switchUnit },
 )
@@ -107,6 +107,27 @@ export default class Home extends Component {
     );
   }
 
+  renderHourlyForecastItem = (item) => {
+    const { unit } = this.props.weather;
+    return (
+      <Hourly item={item} unit={unit}></Hourly>
+    );
+  }
+
+  renderHourlyForecast() {
+    const { hourlyForecastsData, unit } = this.props.weather;
+    return (
+      <FlatList
+        unit={unit}
+        data={hourlyForecastsData}
+        renderItem={({ item }) => this.renderHourlyForecastItem(item)}
+        keyExtractor={item => item.hour}
+        style={{ marginTop: 20, marginHorizontal: 7 }}
+        horizontal={true}
+      />
+    );
+  }
+
   render() {
     return (
       <ScrollView refreshControl={
@@ -123,7 +144,8 @@ export default class Home extends Component {
             {this.renderCurrentData()}
           </View>
           {/* TODO: Mang thoi tiet */}
-          {this.renderDailyForecast(this.props.weather.unit)}
+          {this.renderHourlyForecast()}
+          {this.renderDailyForecast()}
         </View>
       </ScrollView>
     );
@@ -168,15 +190,16 @@ const styles = StyleSheet.create({
   },
 
   location: {
-    marginTop: 24,
+    marginTop: 20,
     fontSize: 18,
   },
 
   todayTemp: {
     color: '#F44336',
     fontSize: 70,
-    fontFamily: 'Helvetica',
     letterSpacing: -1.45,
+    marginVertical: 20,
+    fontFamily: 'Helvetica',
   },
 
   maxMinTemp: {
@@ -194,7 +217,6 @@ const styles = StyleSheet.create({
   weeklyTemp: {
     width: '100%',
     marginTop: 30,
-    marginHorizontal: 20,
   },
 
   arrow: {

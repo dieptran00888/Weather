@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 
   weeklyContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
+    marginHorizontal: 15,
     marginVertical: 15,
   },
 });

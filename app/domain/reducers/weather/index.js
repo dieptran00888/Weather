@@ -12,6 +12,7 @@ const initData = {
     text: null,
   },
   forecastData: [],
+  hourlyForecastsData: [],
   isFetching: false,
   lastUpdate: null,
 };
@@ -23,6 +24,7 @@ export default (state = initData, { type, payload }) => {
         ...state,
         currentData: payload.currentData,
         forecastData: payload.forecastData,
+        hourlyForecastsData: payload.hourlyData,
         lastUpdate: payload.lastUpdate,
       };
     case types.weather.switchUnit:
