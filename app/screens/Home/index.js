@@ -13,8 +13,9 @@ import icons from '~/assets/images/weather';
 import Weekly from '~/screens/Home/weekly';
 import Hourly from '~/screens/Home/hourly';
 import {
-  Container, Content, Header, Left, Button, Icon, Body, Right,
+  Container, Content, Header, Left, Button, Icon, Body, Right, Drawer,
 } from 'native-base';
+import Menu from '~/screens/Menu';
 
 @connect(
   state => ({
@@ -80,7 +81,10 @@ export default class Home extends Component {
     return (
       <Header transparent style={{ marginHorizontal: 10 }}>
         <Left>
-          <Button transparent>
+          <Button
+            transparent
+            onPress={() => this.openDrawer()}
+          >
             <Icon name='menu' style={{ color: 'black', fontWeight: '900', fontSize: 25 }} />
           </Button>
         </Left>
@@ -144,26 +148,41 @@ export default class Home extends Component {
     );
   }
 
+  closeDrawer = () => {
+    this.drawer._root.close();
+  };
+
+  openDrawer = () => {
+    this.drawer._root.open();
+  };
+
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Container>
-          <Content
-            refreshControl={
-              <RefreshControl
-                refreshing={false}
-                onRefresh={() => this.onRefresh()}
-                title='Updating'
-              />
-            }
-          >
-            {this.renderTemperatureSwitching()}
-            {this.renderCurrentData()}
-            {this.renderHourlyForecast()}
-            {this.renderDailyForecast()}
-          </Content>
-        </Container>
-      </SafeAreaView>
+      <Drawer
+        ref={(ref) => { this.drawer = ref; }}
+        content={<Menu closeDrawer={this.closeDrawer.bind(this)}/>}
+        onClose={() => this.closeDrawer()}
+        drawerLabel='Test'
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <Container>
+            <Content
+              refreshControl={
+                <RefreshControl
+                  refreshing={false}
+                  onRefresh={() => this.onRefresh()}
+                  title='Updating'
+                />
+              }
+            >
+              {this.renderTemperatureSwitching()}
+              {this.renderCurrentData()}
+              {this.renderHourlyForecast()}
+              {this.renderDailyForecast()}
+            </Content>
+          </Container>
+        </SafeAreaView>
+      </Drawer>
     );
   }
 }
