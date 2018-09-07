@@ -16,6 +16,7 @@ import {
   Container, Content, Header, Left, Button, Icon, Body, Right, Drawer,
 } from 'native-base';
 import Menu from '~/screens/Menu';
+import { Actions } from 'react-native-router-flux';
 
 @connect(
   state => ({
@@ -98,7 +99,10 @@ export default class Home extends Component {
           </TouchableOpacity>
         </Body>
         <Right>
-          <Button transparent>
+          <Button
+            transparent
+            onPress={() => Actions.locationSearching()}
+          >
             <Icon name='add' style={{ color: 'black', fontSize: 25, fontWeight: '900' }}></Icon>
           </Button>
         </Right>

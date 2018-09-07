@@ -48,8 +48,8 @@ export default class Menu extends Component {
 
   renderLocations() {
     return (
-      <FlatList>
-      </FlatList>
+      // TODO: Fill locations here
+      <FlatList/>
     );
   }
 
@@ -68,7 +68,9 @@ export default class Menu extends Component {
           bordered
           light
           style={{
-            borderColor: '#C0C0C0',
+            borderColor: '#e0e0e0',
+            borderWidth: 1,
+            borderRadius: 8,
             flexDirection: 'row',
             justifyContent: 'center',
             width: '100%',
