@@ -14,7 +14,12 @@ export default class Hourly extends Component {
         flexDirection: 'column', marginHorizontal: 8, justifyContent: 'center', alignItems: 'center',
       }}>
         <Text>{temp}˚</Text>
-        <Image source={icons['2']} style={{ width: 29, height: 29, marginVertical: 5 }} />
+        <Image
+          source={icons[item.icon]}
+          style={{
+            width: 29, height: 29, marginVertical: 5, resizeMode: 'contain',
+          }}
+        />
         <Text>{hourString}</Text>
       </View>
     );

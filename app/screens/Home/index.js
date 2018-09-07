@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Text, View, Image, TouchableOpacity, StyleSheet, FlatList, ScrollView, RefreshControl,
+  Text, View, Image, TouchableOpacity, StyleSheet, FlatList,
+  RefreshControl, SafeAreaView,
 } from 'react-native';
 
 import weatherSelector from '~/domain/selectors/weather';
@@ -11,6 +12,9 @@ import { getTemperatureFromUnit } from '~/utils';
 import icons from '~/assets/images/weather';
 import Weekly from '~/screens/Home/weekly';
 import Hourly from '~/screens/Home/hourly';
+import {
+  Container, Content, Header, Left, Button, Icon, Body, Right,
+} from 'native-base';
 
 @connect(
   state => ({
@@ -45,7 +49,7 @@ export default class Home extends Component {
     const currentCityName = weather.cityName || '--';
     const currentIconUri = icons[weather.currentData.icon];
     return (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: 80 }}>
         <Text style={styles.location}>{currentCityName}</Text>
         <Text style={styles.todayTemp}>
           {currentTemperature}˚{currentUnit}
@@ -74,15 +78,27 @@ export default class Home extends Component {
   renderTemperatureSwitching() {
     const { weather } = this.props;
     return (
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => this.changeUnit('C')}>
-          <Text style={{ fontSize: 20, color: weather.unit === 'C' ? '#F44336' : '#999999', paddingRight: 23 }}>&#8451;</Text>
-        </TouchableOpacity>
-        <Text style={styles.verticalBar}>|</Text>
-        <TouchableOpacity onPress={() => this.changeUnit('F')}>
-          <Text style={{ fontSize: 20, color: weather.unit === 'F' ? '#F44336' : '#999999', paddingLeft: 23 }}>&#8457;</Text>
-        </TouchableOpacity>
-      </View>
+      <Header transparent style={{ marginHorizontal: 10 }}>
+        <Left>
+          <Button transparent>
+            <Icon name='menu' style={{ color: 'black', fontWeight: '900', fontSize: 25 }} />
+          </Button>
+        </Left>
+        <Body style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => this.changeUnit('C')}>
+            <Text style={{ fontSize: 20, color: weather.unit === 'C' ? '#F44336' : '#999999', paddingRight: 23 }}>&#8451;</Text>
+          </TouchableOpacity>
+          <Text style={styles.verticalBar}>|</Text>
+          <TouchableOpacity onPress={() => this.changeUnit('F')}>
+            <Text style={{ fontSize: 20, color: weather.unit === 'F' ? '#F44336' : '#999999', paddingLeft: 23 }}>&#8457;</Text>
+          </TouchableOpacity>
+        </Body>
+        <Right>
+          <Button transparent>
+            <Icon name='add' style={{ color: 'black', fontSize: 25, fontWeight: '900' }}></Icon>
+          </Button>
+        </Right>
+      </Header>
     );
   }
 
@@ -130,24 +146,24 @@ export default class Home extends Component {
 
   render() {
     return (
-      <ScrollView refreshControl={
-        <RefreshControl
-          refreshing={false}
-          onRefresh={() => this.onRefresh()}
-          title='Updating'
-        />
-      }>
-        <View style={styles.container} >
-          {/* TODO: Header view - Current */}
-          <View style={styles.header}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Container>
+          <Content
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={() => this.onRefresh()}
+                title='Updating'
+              />
+            }
+          >
             {this.renderTemperatureSwitching()}
             {this.renderCurrentData()}
-          </View>
-          {/* TODO: Mang thoi tiet */}
-          {this.renderHourlyForecast()}
-          {this.renderDailyForecast()}
-        </View>
-      </ScrollView>
+            {this.renderHourlyForecast()}
+            {this.renderDailyForecast()}
+          </Content>
+        </Container>
+      </SafeAreaView>
     );
   }
 }
@@ -167,9 +183,9 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: {
-    justifyContent: 'center',
     flexDirection: 'row',
     width: 95,
+    justifyContent: 'center',
   },
 
   activeDegree: {
@@ -190,7 +206,7 @@ const styles = StyleSheet.create({
   },
 
   location: {
-    marginTop: 20,
+    marginTop: 15,
     fontSize: 18,
   },
 
@@ -198,7 +214,7 @@ const styles = StyleSheet.create({
     color: '#F44336',
     fontSize: 70,
     letterSpacing: -1.45,
-    marginVertical: 20,
+    marginVertical: 15,
     fontFamily: 'Helvetica',
   },
 
