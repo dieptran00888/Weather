@@ -1,19 +1,9 @@
 import { call, put, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import moment from 'moment';
-import { create } from 'apisauce';
+import { api, APIKEY } from '~/configs';
 import { repeatData } from '~/domain/actions/weather';
 import weatherSelector from '~/domain/selectors/weather';
-
-const APIKEY = 'dgDtGR2Q74nEccZzXPrJ52GWbPAl8zm6';
-
-const api = create({
-  baseURL: 'http://dataservice.accuweather.com',
-  headers: {
-    Accept: 'application/json',
-  },
-  timeout: 30000,
-});
 
 function* getCurrentData(cityId) {
   try {

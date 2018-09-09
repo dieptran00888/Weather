@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
 import {
-  Container, Header, Left, Button, Icon, Body, Title, Right, Content, Input, Text, View,
+  Container, Header, Left, Button, Icon, Body, Title, Right, Input, Text, View,
 } from 'native-base';
 import { Actions } from 'react-native-router-flux';
 import { FlatList } from 'react-native';
-import { gray } from 'kleur';
+import { connect } from 'react-redux';
+import citySelector from '~/domain/selectors/city';
+import { searchCity } from '~/domain/actions/city';
 
+@connect(
+  state => ({
+    cities: citySelector.searchCity(state),
+  }),
+  { searchCity },
+)
 export default class LocationSearching extends Component {
   constructor(props) {
     super(props);
@@ -23,6 +31,10 @@ export default class LocationSearching extends Component {
     );
   }
 
+  backToHome() {
+    Actions.pop();
+  }
+
   renderHeader() {
     return (
       <Header
@@ -35,7 +47,7 @@ export default class LocationSearching extends Component {
         <Left>
           <Button
             transparent
-            onPress={() => Actions.pop()}
+            onPress={() => this.backToHome()}
           >
             <Icon name='arrow-back' style={{ color: 'black', fontSize: 25 }}></Icon>
           </Button>
@@ -50,6 +62,7 @@ export default class LocationSearching extends Component {
 
   onChangeText = (text) => {
     if (text.trim()) {
+      this.props.searchCity({ cityName: text });
       this.setState({
         isSearching: true,
       });
@@ -79,7 +92,6 @@ export default class LocationSearching extends Component {
             borderColor: '#e0e0e0',
             borderWidth: 1,
             borderRadius: 21,
-            // height: 30,
             paddingLeft: 15,
           }}
         />
@@ -101,15 +113,20 @@ export default class LocationSearching extends Component {
     );
   }
 
-  renderLocation = item => (
+  onPress = city => (
+    Actions
+  )
+
+  renderCity = item => (
     <View style={{ marginBottom: 15 }}>
       <Text
         style={{
           color: '#fe574b',
           fontSize: 24,
         }}
+        onPress={() => this.onPress(item)}
       >
-        {item.key}
+        {item.cityName}
       </Text>
     </View>
   )
@@ -117,9 +134,9 @@ export default class LocationSearching extends Component {
   renderLocationsResults() {
     return (
       <FlatList
-        data={[{ key: 'a' }, { key: 'b' }]}
-        renderItem={({ item }) => this.renderLocation(item)}
-        keyExtractor={item => item.key}
+        data={this.props.cities}
+        renderItem={({ item }) => this.renderCity(item)}
+        keyExtractor={item => item.cityId}
         style={{
           marginHorizontal: 15,
         }}
