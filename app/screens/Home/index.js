@@ -101,7 +101,7 @@ export default class Home extends Component {
         <Right>
           <Button
             transparent
-            onPress={() => Actions.locationSearching()}
+            onPress={() => Actions.citySearching()}
           >
             <Icon name='add' style={{ color: 'black', fontSize: 25, fontWeight: '900' }}></Icon>
           </Button>

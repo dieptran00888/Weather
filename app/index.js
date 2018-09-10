@@ -12,7 +12,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import redux from '~/data/store/redux';
 import Home from '~/screens/Home';
 import { Router, Scene } from 'react-native-router-flux';
-import LocationSearching from '~/screens/LocationSearching';
+import CitySearching from '~/screens/CitySearching';
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -23,7 +23,7 @@ export default class App extends Component<Props> {
         <Router>
           <Scene key='root' hideNavBar>
             <Scene key='home' component={Home} initial></Scene>
-            <Scene key='locationSearching' component={LocationSearching}></Scene>
+            <Scene key='citySearching' component={CitySearching}></Scene>
           </Scene>
         </Router>
         </PersistGate>

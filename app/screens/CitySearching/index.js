@@ -3,18 +3,18 @@ import {
   Container, Header, Left, Button, Icon, Body, Title, Right, Input, Text, View,
 } from 'native-base';
 import { Actions } from 'react-native-router-flux';
-import { FlatList } from 'react-native';
+import { FlatList, TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 import citySelector from '~/domain/selectors/city';
-import { searchCity } from '~/domain/actions/city';
+import { searchCity, addCity } from '~/domain/actions/city';
 
 @connect(
   state => ({
     cities: citySelector.searchCity(state),
   }),
-  { searchCity },
+  { searchCity, addCity },
 )
-export default class LocationSearching extends Component {
+export default class CitySearching extends Component {
   constructor(props) {
     super(props);
     this.state = { isSearching: false };
@@ -113,22 +113,31 @@ export default class LocationSearching extends Component {
     );
   }
 
-  onPress = city => (
-    Actions
-  )
+  onPress(city) {
+    // TODO: press to city
+    this.props.addCity(city);
+    Actions.pop();
+  }
 
   renderCity = item => (
-    <View style={{ marginBottom: 15 }}>
-      <Text
+    <TouchableWithoutFeedback
+      onPress={() => this.onPress(item)}
+    >
+      <View
         style={{
-          color: '#fe574b',
-          fontSize: 24,
+          marginBottom: 15,
         }}
-        onPress={() => this.onPress(item)}
       >
-        {item.cityName}
-      </Text>
-    </View>
+        <Text
+          style={{
+            color: '#fe574b',
+            fontSize: 24,
+          }}
+        >
+          {item.cityName}
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
   )
 
   renderLocationsResults() {

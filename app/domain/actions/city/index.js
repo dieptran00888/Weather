@@ -10,6 +10,11 @@ export const searchSuccess = payload => ({
   payload,
 });
 
+export const addCity = payload => ({
+  type: types.city.addCity,
+  payload,
+});
+
 export default {
   searchCity,
 };
