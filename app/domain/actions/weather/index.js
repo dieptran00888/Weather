@@ -20,9 +20,15 @@ export const repeatFetching = payload => ({
   payload,
 });
 
+export const changeCurrentCity = payload => ({
+  type: types.weather.changeCurrentCity,
+  payload,
+});
+
 export default {
   doFetchData,
   switchUnit,
   repeatFetching,
   repeatData,
+  changeCurrentCity,
 };

@@ -34,6 +34,12 @@ export default (state = initData, { type, payload }) => {
       };
     case types.weather.repeatFetching:
       return { ...state, isFetching: payload };
+    case types.weather.changeCurrentCity:
+      return {
+        ...state,
+        cityId: payload.cityId,
+        cityName: payload.cityName,
+      };
     default:
       return state;
   }

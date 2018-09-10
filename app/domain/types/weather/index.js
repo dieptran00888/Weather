@@ -3,4 +3,5 @@ export default {
   switchUnit: 'weather/switchUnit',
   repeatData: 'weather/repeatData',
   repeatFetching: 'weather/repeatFetching',
+  changeCurrentCity: 'weather/changeCurrentCity',
 };

@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import {
   Container, Text, Content, Button, Icon, Footer, View, H1,
 } from 'native-base';
-import { SafeAreaView, FlatList } from 'react-native';
+import { SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import citySelector from '~/domain/selectors/city';
+import weatherSelector from '~/domain/selectors/weather';
+import { doFetchData, changeCurrentCity } from '~/domain/actions/weather';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
 
 @connect(
   state => ({
     cities: citySelector.getCitiesAdded(state),
+    currentCityId: weatherSelector.getCityId(state),
   }),
-  {},
+  { doFetchData, changeCurrentCity },
 )
 
 export default class Menu extends Component {
@@ -21,7 +24,7 @@ export default class Menu extends Component {
         <Container>
           {this.renderHeader()}
           <Content>
-            {this.renderDefaultCity()}
+            {/* {this.renderDefaultCity()} */}
             {this.renderCitiesAdded()}
             {this.renderAddCityButton()}
           </Content>
@@ -37,7 +40,7 @@ export default class Menu extends Component {
         <Button
           transparent
           style={{
-            width: 50, height: 50, justifyContent: 'center', marginLeft: 10, marginTop: 10,
+            width: 50, height: 50, justifyContent: 'center', marginTop: 10,
           }}
           onPress={() => this.props.closeDrawer()}
         >
@@ -82,24 +85,41 @@ export default class Menu extends Component {
           data={this.props.cities}
           keyExtractor={item => item.cityId}
           renderItem={({ item }) => this.renderCity(item)}
+          currentCityId={this.props.currentCityId}
         />
       </View>
     );
   }
 
-  renderCity = city => (
-    <View
-      style={{
-        marginLeft: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 50,
-      }}
-    >
-      <Icon name='star' style={{ color: '#3a3a3a' }}></Icon>
-      <Text style={{ marginLeft: 10, color: '#3a3a3a', fontSize: 20 }}>{city.cityName}</Text>
-    </View>
-  )
+  renderCity(city) {
+    const isCurrentCity = this.props.currentCityId === city.cityId;
+    return (
+      <TouchableWithoutFeedback
+        onPress={() => this.changeCurrentCity(city)}
+      >
+        <View
+          style={{
+            paddingLeft: 15,
+            flexDirection: 'row',
+            alignItems: 'center',
+            height: 50,
+            backgroundColor: isCurrentCity ? '#f7f7f9' : 'white',
+          }}
+        >
+          <Icon name='star' style={{ color: isCurrentCity ? '#fe574b' : '#3a3a3a' }}></Icon>
+          <Text style={{ marginLeft: 10, color: isCurrentCity ? '#fe574b' : '#3a3a3a', fontSize: 20 }}>{city.cityName}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  changeCurrentCity(city) {
+    if (city.cityId !== this.props.currentCityId) {
+      this.props.changeCurrentCity(city);
+      this.props.doFetchData({ isForceUpdate: true });
+    }
+    this.props.closeDrawer();
+  }
 
   renderAddCityButton() {
     return (
