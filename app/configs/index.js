@@ -8,3 +8,4 @@ export const api = create({
   },
   timeout: 30000,
 });
+export const HANOI_ID = '353412';

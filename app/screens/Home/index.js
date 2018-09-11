@@ -17,6 +17,7 @@ import {
 } from 'native-base';
 import Menu from '~/screens/Menu';
 import { Actions } from 'react-native-router-flux';
+import Swipper from 'react-native-swiper';
 
 @connect(
   state => ({
@@ -170,20 +171,22 @@ export default class Home extends Component {
       >
         <SafeAreaView style={{ flex: 1 }}>
           <Container>
-            <Content
-              refreshControl={
-                <RefreshControl
-                  refreshing={false}
-                  onRefresh={() => this.onRefresh()}
-                  title='Updating'
-                />
-              }
-            >
-              {this.renderTemperatureSwitching()}
-              {this.renderCurrentData()}
-              {this.renderHourlyForecast()}
-              {this.renderDailyForecast()}
-            </Content>
+            {this.renderTemperatureSwitching()}
+            <Swipper loop>
+              <Content
+                refreshControl={
+                  <RefreshControl
+                    refreshing={false}
+                    onRefresh={() => this.onRefresh()}
+                    title='Updating'
+                  />
+                }
+              >
+                {this.renderCurrentData()}
+                {this.renderHourlyForecast()}
+                {this.renderDailyForecast()}
+              </Content>
+            </Swipper>
           </Container>
         </SafeAreaView>
       </Drawer>

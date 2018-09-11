@@ -15,6 +15,14 @@ export const addCity = payload => ({
   payload,
 });
 
+export const deleteCity = payload => ({
+  type: types.city.deleteCity,
+  payload,
+});
+
 export default {
   searchCity,
+  searchSuccess,
+  addCity,
+  deleteCity,
 };

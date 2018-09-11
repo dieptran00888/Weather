@@ -28,6 +28,11 @@ export default (state = initData, { type, payload }) => {
         ...state,
         citiesAdded: [...state.citiesAdded, payload],
       };
+    case types.city.deleteCity:
+      return {
+        ...state,
+        citiesAdded: [...state.citiesAdded.filter(city => city.cityId !== payload.cityId)],
+      };
     default:
       return state;
   }

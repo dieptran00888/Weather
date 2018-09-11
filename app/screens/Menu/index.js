@@ -6,15 +6,18 @@ import { SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import citySelector from '~/domain/selectors/city';
 import weatherSelector from '~/domain/selectors/weather';
 import { doFetchData, changeCurrentCity } from '~/domain/actions/weather';
+import { deleteCity } from '~/domain/actions/city';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
+import Swipeout from 'react-native-swipeout';
+import { HANOI_ID } from '~/configs';
 
 @connect(
   state => ({
     cities: citySelector.getCitiesAdded(state),
     currentCityId: weatherSelector.getCityId(state),
   }),
-  { doFetchData, changeCurrentCity },
+  { doFetchData, changeCurrentCity, deleteCity },
 )
 
 export default class Menu extends Component {
@@ -93,23 +96,36 @@ export default class Menu extends Component {
 
   renderCity(city) {
     const isCurrentCity = this.props.currentCityId === city.cityId;
+    const swipeButtons = [{
+      text: 'Delete',
+      backgroundColor: 'red',
+      onPress: () => this.delete(city),
+    }];
+    const isPinnedCity = city.cityId === HANOI_ID;
     return (
-      <TouchableWithoutFeedback
-        onPress={() => this.changeCurrentCity(city)}
+      <Swipeout
+        autoClose
+        transparent
+        right={swipeButtons}
+        disabled={isPinnedCity}
       >
-        <View
-          style={{
-            paddingLeft: 15,
-            flexDirection: 'row',
-            alignItems: 'center',
-            height: 50,
-            backgroundColor: isCurrentCity ? '#f7f7f9' : 'white',
-          }}
+        <TouchableWithoutFeedback
+          onPress={() => this.changeCurrentCity(city)}
         >
-          <Icon name='star' style={{ color: isCurrentCity ? '#fe574b' : '#3a3a3a' }}></Icon>
-          <Text style={{ marginLeft: 10, color: isCurrentCity ? '#fe574b' : '#3a3a3a', fontSize: 20 }}>{city.cityName}</Text>
-        </View>
-      </TouchableWithoutFeedback>
+          <View
+            style={{
+              paddingLeft: 15,
+              flexDirection: 'row',
+              alignItems: 'center',
+              height: 50,
+              backgroundColor: isCurrentCity ? '#f7f7f9' : 'white',
+            }}
+          >
+            <Icon name='star' style={{ color: isCurrentCity ? '#fe574b' : '#3a3a3a' }}></Icon>
+            <Text style={{ marginLeft: 10, color: isCurrentCity ? '#fe574b' : '#3a3a3a', fontSize: 20 }}>{city.cityName}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </Swipeout>
     );
   }
 
@@ -154,5 +170,9 @@ export default class Menu extends Component {
 
   addCity() {
     Actions.citySearching();
+  }
+
+  delete(city) {
+    this.props.deleteCity(city);
   }
 }
